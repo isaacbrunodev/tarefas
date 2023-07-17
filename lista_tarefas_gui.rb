@@ -1,54 +1,48 @@
-require 'gtk3'
+require 'tty-prompt'
 
+# Cria um array para armazenar as tarefas
 tarefas = []
 
-def exibir_lista(tarefas)
+# Cria um objeto prompt
+prompt = TTY::Prompt.new
+
+# Método para adicionar uma tarefa
+def adicionar_tarefa(tarefas, prompt)
+  tarefa = prompt.ask('Digite a tarefa:')
+  tarefas << tarefa
+  puts "Tarefa adicionada: #{tarefa}"
+end
+
+# Método para remover uma tarefa
+def remover_tarefa(tarefas, prompt)
+  tarefa = prompt.select('Selecione uma tarefa para remover:', tarefas)
+  tarefas.delete(tarefa)
+  puts "Tarefa removida: #{tarefa}"
+end
+
+# Método para visualizar as tarefas
+def visualizar_tarefas(tarefas)
   if tarefas.empty?
-    "Nenhuma tarefa cadastrada."
+    puts "Nenhuma tarefa cadastrada."
   else
-    tarefas.each_with_index.map { |tarefa, index| "#{index + 1}. #{tarefa}" }.join("\n")
+    puts "Lista de tarefas:"
+    tarefas.each_with_index { |tarefa, index| puts "#{index + 1}. #{tarefa}" }
   end
 end
 
-# Cria a janela principal
-window = Gtk::Window.new("Lista de Tarefas")
-window.set_default_size(300, 200)
+# Loop principal do programa
+loop do
+  # Exibe o menu de opções para o usuário
+  opcao = prompt.select('Selecione uma opção:', ['Adicionar Tarefa', 'Remover Tarefa', 'Visualizar Tarefas', 'Sair'])
 
-# Cria uma caixa vertical para organizar os componentes
-vbox = Gtk::Box.new(:vertical, 5)
-window.add(vbox)
-
-# Cria uma entrada de texto para o usuário digitar a tarefa
-entry = Gtk::Entry.new
-vbox.pack_start(entry, expand: false, fill: false, padding: 10)
-
-# Cria um botão para adicionar a tarefa à lista
-button = Gtk::Button.new(label: "Adicionar Tarefa")
-vbox.pack_start(button, expand: false, fill: false, padding: 10)
-
-# Cria uma caixa de texto para exibir a lista de tarefas
-textview = Gtk::TextView.new
-textview.editable = false
-textview.buffer.text = exibir_lista(tarefas)
-vbox.pack_start(textview, expand: true, fill: true, padding: 10)
-
-# Conecta o evento de clique do botão para adicionar a tarefa
-button.signal_connect("clicked") do
-  tarefa = entry.text.strip
-  unless tarefa.empty?
-    tarefas << tarefa
-    textview.buffer.text = exibir_lista(tarefas)
-    entry.text = ""
+  case opcao
+  when 'Adicionar Tarefa'
+    adicionar_tarefa(tarefas, prompt)
+  when 'Remover Tarefa'
+    remover_tarefa(tarefas, prompt)
+  when 'Visualizar Tarefas'
+    visualizar_tarefas(tarefas)
+  when 'Sair'
+    break
   end
 end
-
-# Conecta o evento de fechar a janela
-window.signal_connect("destroy") do
-  Gtk.main_quit
-end
-
-# Exibe a janela
-window.show_all
-
-# Inicia o loop principal do GTK
-Gtk.main
