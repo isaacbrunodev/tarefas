@@ -28,7 +28,7 @@ ruby gerenciador_de_tarefas.rb
         Visualizar Tarefas: Exibe a lista de tarefas cadastradas.
         Sair: Encerra o programa.
 
-     Siga as instruções na tela para adicionar, remover ou visualizar tarefas.#
+     Siga as instruções na tela para adicionar, remover ou visualizar tarefas.
 
 
 
